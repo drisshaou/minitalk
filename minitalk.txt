@@ -1,0 +1,129 @@
+Les signaux Unix, par eux-mêmes, ne transportent pas de données autres que le numéro du signal lui-même. Cependant, vous pouvez utiliser des signaux pour synchroniser des actions entre processus. Par exemple, vous pouvez signaler à un autre processus d'aller lire un fichier ou une mémoire partagée où les données ont été placées. Si vous êtes vraiment limité à utiliser uniquement des signaux pour envoyer du texte, vous devrez utiliser un peu de créativité.
+
+### Utilisation des Signaux et des Variables Globales
+
+Voici une méthode où vous pouvez utiliser des signaux pour coordonner l'envoi et la réception de petites quantités de données en utilisant des variables globales partagées. Notez que cette méthode est limitée par la taille des données que vous pouvez envoyer et n'est pas une méthode robuste pour des applications complexes ou de grande taille.
+
+#### writer.c (Écrivain)
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <signal.h>
+#include <unistd.h>
+#include <string.h>
+
+#define MESSAGE_SIZE 256
+
+volatile sig_atomic_t ready_to_send = 0;
+char message[MESSAGE_SIZE];
+
+void handle_signal(int sig) {
+    ready_to_send = 1;
+}
+
+int main() {
+    pid_t reader_pid;
+    printf("Enter the reader PID: ");
+    scanf("%d", &reader_pid);
+
+    // Définir le gestionnaire de signal pour SIGUSR2
+    signal(SIGUSR2, handle_signal);
+
+    // Lire le message à envoyer
+    printf("Enter the message to send: ");
+    scanf("%s", message);
+
+    // Envoyer le signal au processus lecteur
+    kill(reader_pid, SIGUSR1);
+
+    // Attendre que le lecteur soit prêt à recevoir
+    while (!ready_to_send) {
+        pause();
+    }
+
+    printf("Message sent: %s\n", message);
+    return 0;
+}
+```
+
+#### reader.c (Lecteur)
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <signal.h>
+#include <unistd.h>
+
+#define MESSAGE_SIZE 256
+
+extern char message[MESSAGE_SIZE];
+volatile sig_atomic_t message_received = 0;
+
+void handle_signal(int sig) {
+    if (sig == SIGUSR1) {
+        // Afficher le message
+        printf("Received message: %s\n", message);
+        message_received = 1;
+
+        // Répondre à l'écrivain
+        kill(getppid(), SIGUSR2);
+    }
+}
+
+int main() {
+    // Afficher le PID pour que l'écrivain puisse l'utiliser
+    printf("Reader PID: %d\n", getpid());
+
+    // Définir le gestionnaire de signal pour SIGUSR1
+    signal(SIGUSR1, handle_signal);
+
+    // Attendre que le signal arrive
+    while (!message_received) {
+        pause(); // Attendre un signal
+    }
+
+    return 0;
+}
+```
+
+### Explications
+
+1. **Déclaration de Variables Globales** :
+   - `message`: Une chaîne de caractères partagée entre les processus écrivain et lecteur.
+   - `ready_to_send` et `message_received`: Variables volatiles pour synchroniser l'état de communication entre les processus.
+
+2. **Gestion des Signaux** :
+   - Écrivain :
+     - `signal(SIGUSR2, handle_signal)`: Définit le gestionnaire de signal pour `SIGUSR2`.
+     - `kill(reader_pid, SIGUSR1)`: Envoie `SIGUSR1` au lecteur pour signaler qu'un message est prêt.
+   - Lecteur :
+     - `signal(SIGUSR1, handle_signal)`: Définit le gestionnaire de signal pour `SIGUSR1`.
+     - `kill(getppid(), SIGUSR2)`: Envoie `SIGUSR2` à l'écrivain pour confirmer la réception du message.
+
+3. **Processus de Communication** :
+   - L'écrivain attend que le lecteur soit prêt à recevoir avant d'afficher la confirmation de l'envoi.
+   - Le lecteur affiche le message lorsqu'il reçoit `SIGUSR1` et envoie `SIGUSR2` pour informer l'écrivain.
+
+### Compilation et Exécution
+
+1. Compilez les deux programmes :
+
+```sh
+gcc -o writer writer.c
+gcc -o reader reader.c
+```
+
+2. Dans un terminal, exécutez le processus lecteur :
+
+```sh
+./reader
+```
+
+3. Dans un autre terminal, exécutez le processus écrivain :
+
+```sh
+./writer
+```
+
+Notez que cette méthode utilise des variables globales, ce qui peut être dangereux en raison des conditions de course si les processus ne sont pas bien synchronisés. Pour des applications réelles et robustes, il est fortement recommandé d'utiliser des mécanismes IPC plus sûrs comme les mémoires partagées, les pipes ou les sockets.
