@@ -5,8 +5,6 @@
 // #include <sys/siginfo.h>
 
 
-// pid_t clent_pid;
-
 // Déclaration du gestionnaire de signal avec des informations supplémentaires
 // void handle_sigint(int sig, siginfo_t *siginfo, void *context) {
 //     printf("Caught signal %d (SIGINT)\n", sig);
@@ -22,8 +20,9 @@ void handle_bit(int sig, siginfo_t *siginfo, void *context) {
     static int bitValue = -1;
     static int bitCount = 0;
     static char currentChar = 0;
+    static int len = 0;
 
-	printf("received: %d\n\n", sig);
+	// printf("received from client: %d\n\n", sig);
 
     if (sig == SIGUSR1) {
         bitValue = 0;
@@ -34,42 +33,44 @@ void handle_bit(int sig, siginfo_t *siginfo, void *context) {
     currentChar = (currentChar << 1) | bitValue;
     bitCount++;
 
+	printf("received from client: %d, bitCount: %d\n\n", sig, bitCount);
     if (bitCount == 8) {
-        printf("%c", currentChar);
-        // fflush(stdout);
+        // printf("%c", currentChar);
+        write(1, &currentChar, 1);
         bitCount = 0;
         currentChar = 0;
-        // kill(siginfo->si_pid, SIGUSR1); // Envoyer confirmation de réception
+        len++;
     }
-    kill(siginfo->si_pid, SIGUSR2); // Envoyer confirmation de réception
-	pause();
+    usleep(500);
+    kill(siginfo->si_pid, sig); // Envoyer confirmation de réception
+    // printf("send confirm to client: %d\n\n", sig);
+	// pause();
+    // usleep(1000);
 }
 
-int main() {
-	// pid_t clent_pid;
+void load_sigaction() {
     struct sigaction sa1, sa2;
-
-    // sa1.sa_handler = handle_bit;
     sa1.sa_sigaction = handle_bit;
-    sa1.sa_flags = 0; //SA_RESTART;
+    sa1.sa_flags = SA_SIGINFO | SA_RESTART;
     sigemptyset(&sa1.sa_mask);
     if (sigaction(SIGUSR1, &sa1, NULL) == -1) {
         perror("sigaction");
         exit(EXIT_FAILURE);
     }
 
-    // sa1.sa_handler = handle_bit;
-    sa1.sa_sigaction = handle_bit;
-    sa2.sa_flags = 0; //SA_RESTART;
+    sa2.sa_sigaction = handle_bit;
+    sa2.sa_flags = SA_SIGINFO | SA_RESTART;
     sigemptyset(&sa2.sa_mask);
     if (sigaction(SIGUSR2, &sa2, NULL) == -1) {
         perror("sigaction");
         exit(EXIT_FAILURE);
     }
+}
 
-    printf("Receiver PID: %d\n", getpid());
-    // printf("Please set the sender PID: ");
-    // scanf("%d", &clent_pid);
+int main() {
+    load_sigaction();
+
+    printf("Server PID: %d\n", getpid());
 
     while (1) {
         pause();  // Attendre un signal
