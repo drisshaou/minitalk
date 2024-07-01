@@ -6,12 +6,12 @@
 /*   By: drhaouha <drhaouha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 21:34:23 by drhaouha          #+#    #+#             */
-/*   Updated: 2024/07/01 21:54:55 by drhaouha         ###   ########.fr       */
+/*   Updated: 2024/07/01 22:48:57 by drhaouha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <unistd.h>
 #include <limits.h>
-# include <unistd.h>
 
 void	*ft_memset(void *b, int c, size_t len)
 {

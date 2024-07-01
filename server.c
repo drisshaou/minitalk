@@ -6,7 +6,7 @@
 /*   By: drhaouha <drhaouha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 02:44:29 by drhaouha          #+#    #+#             */
-/*   Updated: 2024/07/01 21:59:16 by drhaouha         ###   ########.fr       */
+/*   Updated: 2024/07/01 22:59:07 by drhaouha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ void	handle_bit(int sig, siginfo_t *siginfo, void *context)
 }
 
 int	main(void)
-
+{
 	struct sigaction	sa;
 
 	write(STDOUT_FILENO, "Server PID: ", 12);
@@ -111,4 +111,4 @@ int	main(void)
 	while (1)
 		pause();
 	return (0);
-
+}
