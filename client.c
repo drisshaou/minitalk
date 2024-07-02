@@ -6,7 +6,7 @@
 /*   By: drhaouha <drhaouha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 02:45:00 by drhaouha          #+#    #+#             */
-/*   Updated: 2024/07/02 03:29:10 by drhaouha         ###   ########.fr       */
+/*   Updated: 2024/07/02 18:27:22 by drhaouha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ void	send_byte(unsigned char byte, pid_t server_pid)
 	{
 		bit_value = (byte >> bit) & 1;
 		send_bit(bit_value, server_pid);
+		// usleep(400);
 		pause();
 		bit--;
 	}
