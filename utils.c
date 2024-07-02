@@ -6,7 +6,7 @@
 /*   By: drhaouha <drhaouha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 21:34:23 by drhaouha          #+#    #+#             */
-/*   Updated: 2024/07/01 22:48:57 by drhaouha         ###   ########.fr       */
+/*   Updated: 2024/07/02 03:25:46 by drhaouha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void	*ft_memset(void *b, int c, size_t len)
 	return (b);
 }
 
-size_t	ft_strlen(const char *str)
+size_t	ft_strlen(unsigned char *str)
 {
 	size_t	i;
 

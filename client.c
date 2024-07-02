@@ -6,7 +6,7 @@
 /*   By: drhaouha <drhaouha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 02:45:00 by drhaouha          #+#    #+#             */
-/*   Updated: 2024/07/01 21:59:50 by drhaouha         ###   ########.fr       */
+/*   Updated: 2024/07/02 03:29:10 by drhaouha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ void	send_byte(unsigned char byte, pid_t server_pid)
 	}
 }
 
-void	send_text(const char *text, pid_t server_pid)
+void	send_text(unsigned char *text, pid_t server_pid)
 {
 	struct sigaction	sa;
 	size_t				len;
@@ -70,10 +70,10 @@ int	main(int ac, char **av)
 	if (ac != 3)
 	{
 		write(STDOUT_FILENO, "Usage: ", 7);
-		write(STDOUT_FILENO, av[0], ft_strlen(av[0]));
+		write(STDOUT_FILENO, av[0], ft_strlen((unsigned char *)av[0]));
 		write(STDOUT_FILENO, " <server_pid> <text>\n", 21);
 		return (1);
 	}
-	send_text(av[2], (pid_t)ft_atoi(av[1]));
+	send_text((unsigned char *)av[2], (pid_t)ft_atoi(av[1]));
 	return (0);
 }
