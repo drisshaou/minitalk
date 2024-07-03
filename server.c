@@ -6,7 +6,7 @@
 /*   By: drhaouha <drhaouha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 02:44:29 by drhaouha          #+#    #+#             */
-/*   Updated: 2024/07/03 02:43:15 by drhaouha         ###   ########.fr       */
+/*   Updated: 2024/07/03 03:48:14 by drhaouha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,21 +47,22 @@ void	process_byte(siginfo_t *info, t_buffer *data, unsigned char **str)
 {
 	data->buffer[data->byte_count] = data->current_byte;
 	data->byte_count++;
-	data->bit_count = 0;
-	data->current_byte = 0;
-	if (data->buffer[data->byte_count - 1] == '\0' || data->byte_count == 512)
+	if (data->current_byte == '\0' || data->byte_count == 512)
 	{
+		data->byte_count -= (data->current_byte == '\0');
 		*str = update_str(str, data);
 		if (!(*str))
 		{
 			kill(info->si_pid, SIGUSR1);
 			exit(EXIT_FAILURE);
 		}
-		if (data->buffer[data->byte_count - 1] == '\0')
+		if (data->current_byte == '\0')
 			print_str(str);
-		data->byte_count = 0;
 		ft_memset(data->buffer, 0, 512);
+		data->byte_count = 0;
 	}
+	data->current_byte = 0;
+	data->bit_count = 0;
 }
 
 void	handle_bit(int sig, siginfo_t *info, void *context)
