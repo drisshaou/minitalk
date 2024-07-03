@@ -6,7 +6,7 @@
 /*   By: drhaouha <drhaouha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 02:45:00 by drhaouha          #+#    #+#             */
-/*   Updated: 2024/07/03 19:17:47 by drhaouha         ###   ########.fr       */
+/*   Updated: 2024/07/03 19:32:08 by drhaouha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ void	handle_sig(int sig, siginfo_t *info, void *context)
 	{
 		bit_count++;
 		if (bit_count == 8)
-			write(STDOUT_FILENO, "Confirmation de reception recu.\n", 32);
+			write(STDOUT_FILENO, "Confirmation de réception reçu.\n", 34);
 	}
 	else if (sig == SIGUSR1 && info->si_pid != getpid())
 		exit(EXIT_FAILURE);
@@ -82,8 +82,8 @@ int	main(int ac, char **av)
 		write(STDOUT_FILENO, "Usage: ", 7);
 		write(STDOUT_FILENO, av[0], ft_strlen((unsigned char *)av[0]));
 		write(STDOUT_FILENO, " <server_pid> <text>\n", 21);
-		return (1);
+		return (0);
 	}
 	send_text((unsigned char *)av[2], (pid_t)ft_atoi(av[1]));
-	return (0);
+	return (1);
 }

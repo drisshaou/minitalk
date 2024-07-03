@@ -6,7 +6,7 @@
 /*   By: drhaouha <drhaouha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 02:44:29 by drhaouha          #+#    #+#             */
-/*   Updated: 2024/07/03 19:13:47 by drhaouha         ###   ########.fr       */
+/*   Updated: 2024/07/03 19:22:19 by drhaouha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,8 +104,9 @@ int	main(void)
 		|| sigaction(SIGUSR2, &sa, NULL) == -1)
 	{
 		exit(EXIT_FAILURE);
+		return (0);
 	}
 	while (1)
 		pause();
-	return (0);
+	return (1);
 }
