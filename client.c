@@ -6,7 +6,7 @@
 /*   By: drhaouha <drhaouha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 02:45:00 by drhaouha          #+#    #+#             */
-/*   Updated: 2024/07/03 02:28:16 by drhaouha         ###   ########.fr       */
+/*   Updated: 2024/07/03 19:17:47 by drhaouha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,19 @@
 
 void	handle_sig(int sig, siginfo_t *info, void *context)
 {
-	(void)info;
+	static int	confirmed = 0;
+	static int	bit_count = 0;
+
 	(void)context;
-	if (sig == SIGUSR1)
+	if (sig == SIGUSR2 && info->si_pid == getpid())
+		confirmed = 1;
+	else if (sig == SIGUSR2 && info->si_pid != getpid() && confirmed)
+	{
+		bit_count++;
+		if (bit_count == 8)
+			write(STDOUT_FILENO, "Confirmation de reception recu.\n", 32);
+	}
+	else if (sig == SIGUSR1 && info->si_pid != getpid())
 		exit(EXIT_FAILURE);
 }
 
@@ -38,7 +48,6 @@ void	send_byte(unsigned char byte, pid_t server_pid)
 	{
 		bit_value = (byte >> bit) & 1;
 		send_bit(bit_value, server_pid);
-		// usleep(400); // usleep pour permettre au serveur de traiter le signal
 		pause();
 		bit--;
 	}
@@ -62,6 +71,7 @@ void	send_text(unsigned char *text, pid_t server_pid)
 	i = 0;
 	while (i < len)
 		send_byte((unsigned char)text[i++], server_pid);
+	kill(getpid(), SIGUSR2);
 	send_byte('\0', server_pid);
 }
 
