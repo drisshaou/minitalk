@@ -6,15 +6,15 @@
 /*   By: drhaouha <drhaouha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 02:45:00 by drhaouha          #+#    #+#             */
-/*   Updated: 2024/07/02 18:27:22 by drhaouha         ###   ########.fr       */
+/*   Updated: 2024/07/03 02:28:16 by drhaouha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "client.h"
 
-void	handle_sig(int sig, siginfo_t *siginfo, void *context)
+void	handle_sig(int sig, siginfo_t *info, void *context)
 {
-	(void)siginfo;
+	(void)info;
 	(void)context;
 	if (sig == SIGUSR1)
 		exit(EXIT_FAILURE);
@@ -26,7 +26,6 @@ void	send_bit(int bit, pid_t server_pid)
 		kill(server_pid, SIGUSR1);
 	else
 		kill(server_pid, SIGUSR2);
-	// usleep(10000); // Pause pour permettre au serveur de traiter le signal
 }
 
 void	send_byte(unsigned char byte, pid_t server_pid)
@@ -39,7 +38,7 @@ void	send_byte(unsigned char byte, pid_t server_pid)
 	{
 		bit_value = (byte >> bit) & 1;
 		send_bit(bit_value, server_pid);
-		// usleep(400);
+		// usleep(400); // usleep pour permettre au serveur de traiter le signal
 		pause();
 		bit--;
 	}

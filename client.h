@@ -6,7 +6,7 @@
 /*   By: drhaouha <drhaouha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 21:06:11 by drhaouha          #+#    #+#             */
-/*   Updated: 2024/07/02 03:27:48 by drhaouha         ###   ########.fr       */
+/*   Updated: 2024/07/03 02:12:01 by drhaouha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 # include <string.h>
 # include <limits.h>
 
-void	handle_sig(int sig, siginfo_t *siginfo, void *context);
+void	handle_sig(int sig, siginfo_t *info, void *context);
 void	send_bit(int bit, pid_t server_pid);
 void	send_byte(unsigned char byte, pid_t server_pid);
 void	send_text(unsigned char *text, pid_t server_pid);
