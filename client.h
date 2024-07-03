@@ -6,7 +6,7 @@
 /*   By: drhaouha <drhaouha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 21:06:11 by drhaouha          #+#    #+#             */
-/*   Updated: 2024/07/03 02:12:01 by drhaouha         ###   ########.fr       */
+/*   Updated: 2024/07/03 04:40:30 by drhaouha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <signal.h>
-# include <string.h>
 # include <limits.h>
 
 void	handle_sig(int sig, siginfo_t *info, void *context);
