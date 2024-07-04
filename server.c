@@ -6,7 +6,7 @@
 /*   By: drhaouha <drhaouha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 02:44:29 by drhaouha          #+#    #+#             */
-/*   Updated: 2024/07/04 03:17:00 by drhaouha         ###   ########.fr       */
+/*   Updated: 2024/07/04 19:55:19 by drhaouha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,24 +64,42 @@ void	process_byte(t_buffer *data, unsigned char **str)
 
 void	handle_bit(int sig, siginfo_t *info, void *context)
 {
-	static t_buffer			data = {0, 0, 0, 0, {'\0'}};
-	static unsigned char	*str;
+	static t_buffer			data[PID_MAX_LIMIT] = {{0, 0, 0, 0, {'\0'}, NULL}};
+	// static unsigned char	*str[PID_MAX_LIMIT] = {NULL};
+	// static int				busy[PID_MAX_LIMIT] = {0};
+	// int						i;
+	// int						prevent;
 
 	(void)context;
-	if (str == NULL)
-	{
-		str = (unsigned char *)malloc(sizeof(char) * 1);
-		if (!str)
-			exit(EXIT_FAILURE);
-		str[0] = '\0';
-	}
-	data.bit_value = (sig == SIGUSR2);
-	data.current_byte = (data.current_byte << 1) | data.bit_value;
-	data.bit_count++;
-	if (data.bit_count == 8)
-		process_byte(&data, &str);
-	usleep(200);
-	kill(info->si_pid, sig);
+	// i = 0;
+	// prevent = 0;
+	// while (i < PID_MAX_LIMIT)
+	// 	prevent |= busy[i++];
+	// if (!prevent)
+	// {
+	// 	busy[info->si_pid] = 1;
+		if (data[info->si_pid].str == NULL)
+		{
+			data[info->si_pid].str = (unsigned char *)malloc(sizeof(char) * 1);
+			if (!data[info->si_pid].str)
+				exit(EXIT_FAILURE);
+			data[info->si_pid].str[0] = '\0';
+		}
+		data[info->si_pid].bit_value = (sig == SIGUSR2);
+		data[info->si_pid].current_byte = (data[info->si_pid].current_byte << 1) | data[info->si_pid].bit_value;
+		data[info->si_pid].bit_count++;
+		if (data[info->si_pid].bit_count == 8)
+			process_byte(&data[info->si_pid], &data[info->si_pid].str);
+		// busy[info->si_pid] = 0;
+		usleep(200);
+		kill(info->si_pid, sig);
+	// }
+	// else
+	// {
+	// 	// printf("prevent %d\n\n", prevent);
+	// 	usleep(100);
+	// 	handle_bit(sig, info, context);
+	// }
 }
 
 int	main(void)

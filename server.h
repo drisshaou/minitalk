@@ -6,12 +6,13 @@
 /*   By: drhaouha <drhaouha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 21:06:11 by drhaouha          #+#    #+#             */
-/*   Updated: 2024/07/04 03:02:23 by drhaouha         ###   ########.fr       */
+/*   Updated: 2024/07/04 19:54:05 by drhaouha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_H
 # define SERVER_H
+# define PID_MAX_LIMIT 4193304
 
 # include <stdio.h>
 # include <stdlib.h>
@@ -25,6 +26,7 @@ typedef struct s_buffer
 	unsigned char	current_byte;
 	int				byte_count;
 	unsigned char	buffer[1024];
+	unsigned char	*str;
 }	t_buffer;
 
 unsigned char	*update_str(unsigned char **str, t_buffer *data);

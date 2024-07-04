@@ -6,7 +6,7 @@
 /*   By: drhaouha <drhaouha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 02:45:00 by drhaouha          #+#    #+#             */
-/*   Updated: 2024/07/04 03:47:09 by drhaouha         ###   ########.fr       */
+/*   Updated: 2024/07/04 16:11:37 by drhaouha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ void	send_byte(unsigned char byte, pid_t server_pid)
 	{
 		bit_value = (byte >> bit) & 1;
 		send_bit(bit_value, server_pid);
-		if (usleep(1000000) == 0)
+		if (usleep(10000000) == 0)
 		{
 			write(STDOUT_FILENO, "Server timeout error.\n", 22);
 			exit(EXIT_FAILURE);
