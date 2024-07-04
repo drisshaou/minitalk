@@ -6,7 +6,7 @@
 /*   By: drhaouha <drhaouha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 21:06:11 by drhaouha          #+#    #+#             */
-/*   Updated: 2024/07/04 02:50:05 by drhaouha         ###   ########.fr       */
+/*   Updated: 2024/07/04 03:45:34 by drhaouha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,10 @@
 
 typedef struct s_ack
 {
-	int	bit_count;
-	int	bit;
-	int	server_bit;
-	int	current_byte;
+	int				bit_count;
+	int				bit;
+	int				server_bit;
+	unsigned char	current_byte;
 }	t_ack;
 
 void	handle_sig(int sig, siginfo_t *info, void *context);
