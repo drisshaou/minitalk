@@ -6,7 +6,7 @@
 /*   By: drhaouha <drhaouha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 02:44:29 by drhaouha          #+#    #+#             */
-/*   Updated: 2024/07/03 19:22:19 by drhaouha         ###   ########.fr       */
+/*   Updated: 2024/07/04 03:17:00 by drhaouha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ unsigned char	*update_str(unsigned char **str, t_buffer *data)
 	size = len + data->byte_count;
 	*str = (unsigned char *)malloc(sizeof(char) * (size + 1));
 	if (!(*str))
-		return (NULL);
+		return (free(tmp), NULL);
 	i = -1;
 	while (tmp[++i])
 		(*str)[i] = tmp[i];
@@ -43,22 +43,19 @@ void	print_str(unsigned char **str)
 	*str = NULL;
 }
 
-void	process_byte(siginfo_t *info, t_buffer *data, unsigned char **str)
+void	process_byte(t_buffer *data, unsigned char **str)
 {
 	data->buffer[data->byte_count] = data->current_byte;
 	data->byte_count++;
-	if (data->current_byte == '\0' || data->byte_count == 512)
+	if (data->current_byte == '\0' || data->byte_count == 1024)
 	{
 		data->byte_count -= (data->current_byte == '\0');
 		*str = update_str(str, data);
 		if (!(*str))
-		{
-			kill(info->si_pid, SIGUSR1);
 			exit(EXIT_FAILURE);
-		}
 		if (data->current_byte == '\0')
 			print_str(str);
-		ft_memset(data->buffer, 0, 512);
+		ft_memset(data->buffer, 0, 1024);
 		data->byte_count = 0;
 	}
 	data->current_byte = 0;
@@ -75,19 +72,16 @@ void	handle_bit(int sig, siginfo_t *info, void *context)
 	{
 		str = (unsigned char *)malloc(sizeof(char) * 1);
 		if (!str)
-		{
-			kill(info->si_pid, SIGUSR1);
 			exit(EXIT_FAILURE);
-		}
 		str[0] = '\0';
 	}
 	data.bit_value = (sig == SIGUSR2);
 	data.current_byte = (data.current_byte << 1) | data.bit_value;
 	data.bit_count++;
 	if (data.bit_count == 8)
-		process_byte(info, &data, &str);
+		process_byte(&data, &str);
 	usleep(200);
-	kill(info->si_pid, SIGUSR2);
+	kill(info->si_pid, sig);
 }
 
 int	main(void)

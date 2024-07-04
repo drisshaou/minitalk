@@ -6,7 +6,7 @@
 /*   By: drhaouha <drhaouha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 21:06:11 by drhaouha          #+#    #+#             */
-/*   Updated: 2024/07/03 04:40:16 by drhaouha         ###   ########.fr       */
+/*   Updated: 2024/07/04 03:02:23 by drhaouha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,13 +24,12 @@ typedef struct s_buffer
 	int				bit_count;
 	unsigned char	current_byte;
 	int				byte_count;
-	unsigned char	buffer[512];
+	unsigned char	buffer[1024];
 }	t_buffer;
 
 unsigned char	*update_str(unsigned char **str, t_buffer *data);
 void			print_str(unsigned char **str);
-void			process_byte(siginfo_t *info, t_buffer *data,
-					unsigned char **str);
+void			process_byte(t_buffer *data, unsigned char **str);
 void			handle_bit(int sig, siginfo_t *info, void *context);
 void			*ft_memset(void *b, int c, size_t len);
 size_t			ft_strlen(unsigned char *str);

@@ -6,7 +6,7 @@
 /*   By: drhaouha <drhaouha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 02:45:00 by drhaouha          #+#    #+#             */
-/*   Updated: 2024/07/03 19:32:08 by drhaouha         ###   ########.fr       */
+/*   Updated: 2024/07/04 03:01:18 by drhaouha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,24 +14,34 @@
 
 void	handle_sig(int sig, siginfo_t *info, void *context)
 {
-	static int	confirmed = 0;
-	static int	bit_count = 0;
+	static t_ack	ack = {0, 0, 0, 0};
 
 	(void)context;
-	if (sig == SIGUSR2 && info->si_pid == getpid())
-		confirmed = 1;
-	else if (sig == SIGUSR2 && info->si_pid != getpid() && confirmed)
+	if (info->si_pid == getpid())
+		ack.bit = (sig == SIGUSR2);
+	else
 	{
-		bit_count++;
-		if (bit_count == 8)
-			write(STDOUT_FILENO, "Confirmation de réception reçu.\n", 34);
+		ack.server_bit = (sig == SIGUSR2);
+		if (ack.bit != ack.server_bit)
+		{
+			write(STDOUT_FILENO, "Bits comparison error.\n", 23);
+			exit(EXIT_FAILURE);
+		}
+		ack.current_byte = (ack.current_byte << 1) | ack.server_bit;
+		ack.bit_count++;
+		if (ack.bit_count == 8 && ack.current_byte == '\0')
+			write(STDOUT_FILENO, "Acknowledgment received.\n", 25);
+		ack.bit_count = !(ack.bit_count == 8) * ack.bit_count;
+		ack.current_byte = !(ack.bit_count == 8) * ack.current_byte;
 	}
-	else if (sig == SIGUSR1 && info->si_pid != getpid())
-		exit(EXIT_FAILURE);
 }
 
 void	send_bit(int bit, pid_t server_pid)
 {
+	if (bit == 0)
+		kill(getpid(), SIGUSR1);
+	else
+		kill(getpid(), SIGUSR2);
 	if (bit == 0)
 		kill(server_pid, SIGUSR1);
 	else
@@ -48,7 +58,11 @@ void	send_byte(unsigned char byte, pid_t server_pid)
 	{
 		bit_value = (byte >> bit) & 1;
 		send_bit(bit_value, server_pid);
-		pause();
+		if (usleep(1000000) == 0)
+		{
+			write(STDOUT_FILENO, "Server timeout error.\n", 22);
+			exit(EXIT_FAILURE);
+		}
 		bit--;
 	}
 }
@@ -71,7 +85,6 @@ void	send_text(unsigned char *text, pid_t server_pid)
 	i = 0;
 	while (i < len)
 		send_byte((unsigned char)text[i++], server_pid);
-	kill(getpid(), SIGUSR2);
 	send_byte('\0', server_pid);
 }
 

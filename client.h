@@ -6,7 +6,7 @@
 /*   By: drhaouha <drhaouha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 21:06:11 by drhaouha          #+#    #+#             */
-/*   Updated: 2024/07/03 04:40:30 by drhaouha         ###   ########.fr       */
+/*   Updated: 2024/07/04 02:50:05 by drhaouha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,14 @@
 # include <unistd.h>
 # include <signal.h>
 # include <limits.h>
+
+typedef struct s_ack
+{
+	int	bit_count;
+	int	bit;
+	int	server_bit;
+	int	current_byte;
+}	t_ack;
 
 void	handle_sig(int sig, siginfo_t *info, void *context);
 void	send_bit(int bit, pid_t server_pid);
